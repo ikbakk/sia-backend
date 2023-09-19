@@ -17,6 +17,9 @@ dependencies:
   express-http-context:
     specifier: ^1.2.4
     version: 1.2.4
+  http-status:
+    specifier: ^1.7.0
+    version: 1.7.0
   joi:
     specifier: ^17.10.1
     version: 17.10.1
@@ -40,6 +43,9 @@ devDependencies:
   '@types/express':
     specifier: ^4.17.17
     version: 4.17.17
+  '@types/morgan':
+    specifier: ^1.9.5
+    version: 1.9.5
   '@types/node':
     specifier: ^20.6.2
     version: 20.6.2
@@ -205,6 +211,12 @@ packages:
 
   /@types/mime@3.0.1:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
+
+  /@types/morgan@1.9.5:
+    resolution: {integrity: sha512-5TgfIWm0lcTGnbCZExwc19dCOMOMmAiiBZQj8Ko3NRxsVDgRxf+AEGRQTqNVA5Yh2xfdWp4clbAEMbYP+jkOqg==}
+    dependencies:
+      '@types/node': 20.6.2
+    dev: true
 
   /@types/node@20.6.2:
     resolution: {integrity: sha512-Y+/1vGBHV/cYk6OI1Na/LHzwnlNCAfU3ZNGrc1LdRe/LAIbdDPTTv/HU3M7yXN448aTVDq3eKRm2cg7iKLb8gw==}
@@ -688,6 +700,11 @@ packages:
       setprototypeof: 1.2.0
       statuses: 2.0.1
       toidentifier: 1.0.1
+    dev: false
+
+  /http-status@1.7.0:
+    resolution: {integrity: sha512-6HZ8T2ywZKtNKOrRA22x4Z+fK+UiWzimWYSTROVHrZ46RX+hKsg9wCQiodRtfNrKfsvOkwsXA6R9q+TmDY+8nQ==}
+    engines: {node: '>= 0.4.0'}
     dev: false
 
   /iconv-lite@0.4.24:

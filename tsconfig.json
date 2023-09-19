@@ -19,7 +19,6 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "importHelpers": true,
-    "baseUrl": "src",
     "outDir": "./dist",
     "plugins": [{ "transform": "ts-optchain/transform" }]
   },
