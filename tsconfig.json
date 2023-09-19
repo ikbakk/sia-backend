@@ -21,13 +21,6 @@
     "importHelpers": true,
     "baseUrl": "src",
     "outDir": "./dist",
-    "paths": {
-      "@app": ["./app.ts"],
-      "@db": ["./db.ts"],
-      "@core/*": ["core/*"],
-      "@components/*": ["components/*"],
-      "@config/*": ["config/*"]
-    },
     "plugins": [{ "transform": "ts-optchain/transform" }]
   },
   "exclude": [
