@@ -14,11 +14,11 @@ export const create = async (student: Student): Promise<Student> => {
   }
 };
 
-export const read = async (id: string): Promise<Student> => {
-  logger.debug(`Sent user.id ${id}`);
+export const read = async (studentID: string): Promise<Student> => {
+  logger.debug(`Sent user.id ${studentID}`);
   const user = await prisma.student.findUnique({
     where: {
-      id,
+      studentID,
     },
   });
   return user;
@@ -33,7 +33,7 @@ export const update = async (student: Student): Promise<Student> => {
   try {
     const updatedUser = await prisma.student.update({
       where: {
-        id: student.id,
+        studentID: student.studentID,
       },
       data: student,
     });
@@ -44,11 +44,35 @@ export const update = async (student: Student): Promise<Student> => {
   }
 };
 
-export const deleteById = async (id: string): Promise<boolean> => {
+export const updateGrade = async (studentID: string, gradeId: string) => {
   try {
-    const deletedUser = await prisma.student.delete({
+    const student = await prisma.student.findUnique({
       where: {
-        id,
+        studentID,
+      },
+    });
+
+    const updatedStudent = await prisma.student.update({
+      where: {
+        studentID,
+      },
+      data: {
+        gradesIDs: [...student.gradesIDs, gradeId],
+      },
+    });
+
+    return updatedStudent;
+  } catch (error) {
+    logger.error(error.message);
+    throw new AppError(httpStatus.BAD_REQUEST, 'Student was not updated');
+  }
+};
+
+export const deleteById = async (studentID: string): Promise<boolean> => {
+  try {
+    await prisma.student.delete({
+      where: {
+        studentID,
       },
     });
     return true;
