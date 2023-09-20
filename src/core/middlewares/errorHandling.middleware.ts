@@ -9,7 +9,6 @@ const errorHandling = (
   error: Error,
   req: Request,
   res: Response,
-  // eslint-disable-next-line
   next: NextFunction,
 ) => {
   errorHandler.handleError(error);
