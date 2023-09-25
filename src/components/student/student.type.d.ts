@@ -5,7 +5,6 @@ export type Student = {
   lastName: string;
   email: string;
   password: string;
-  role: 'ADMIN' | 'STUDENT' | 'TEACHER';
   completedCoursesIDs: string[];
   enrolledCoursesIDs: string[];
   gradesIDs: string[];
