@@ -43,8 +43,9 @@ export const updateStudentGrade = async (
   next: NextFunction,
 ) => {
   try {
-    const grade = req.body as Grade;
-    const updatedGrade = await update(grade);
+    const id = req.params.id;
+    const grade = req.body as Partial<Grade>;
+    const updatedGrade = await update(grade, id);
     res
       .status(httpStatus.OK)
       .json({ message: 'grade updated', data: updatedGrade });

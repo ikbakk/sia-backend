@@ -32,13 +32,16 @@ export const readAll = async (): Promise<Grade[]> => {
   return grades;
 };
 
-export const update = async (grade: Grade): Promise<Grade> => {
+export const update = async (
+  newData: Partial<Grade>,
+  id: string,
+): Promise<Grade> => {
   try {
     const updatedGrade = await prisma.courseGrade.update({
       where: {
-        id: grade.id,
+        id: id,
       },
-      data: grade,
+      data: newData,
     });
     return updatedGrade;
   } catch (error) {
