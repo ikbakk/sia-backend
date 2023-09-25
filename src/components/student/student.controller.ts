@@ -25,8 +25,9 @@ export const updateStudent = async (
   next: NextFunction,
 ) => {
   try {
+    const id = req.params.id;
     const student = req.body as Student;
-    await update(student);
+    await update(student, id);
     res
       .status(httpStatus.OK)
       .json({ message: 'student updated', data: student });

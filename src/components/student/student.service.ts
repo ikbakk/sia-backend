@@ -29,13 +29,16 @@ export const readAll = async (): Promise<Student[]> => {
   return users;
 };
 
-export const update = async (student: Student): Promise<Student> => {
+export const update = async (
+  newData: Partial<Student>,
+  studentID: string,
+): Promise<Student> => {
   try {
     const updatedUser = await prisma.student.update({
       where: {
-        studentID: student.studentID,
+        studentID: studentID,
       },
-      data: student,
+      data: newData,
     });
     return updatedUser;
   } catch (error) {
