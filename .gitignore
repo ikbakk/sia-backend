@@ -1,32 +1,29 @@
-# Logs #
-/logs
+# compiled output
+/dist
+/node_modules
+
+# Logs
+logs
 *.log
-*.log*
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
 
-# Node files #
-node_modules/
-npm-debug.log
-yarn-error.log
-.env
-.npmrc
-
-# OS generated files #
+# OS
 .DS_Store
-Thumbs.db
 
-# Typing #
-typings/
+# Tests
+/coverage
+/.nyc_output
 
-# Dist #
-dist/
-
-# IDE #
-.idea/
-*.swp
-.awcache
-.c9/
+# IDEs and editors
+/.idea
 .project
 .classpath
+.c9/
+*.launch
 .settings/
 *.sublime-workspace
 
@@ -36,7 +33,3 @@ dist/
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-
-# Generated source-code #
-src/**/*.js.map
-coverage/
