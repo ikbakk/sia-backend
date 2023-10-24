@@ -12,12 +12,12 @@ import {
 import { GradesService } from './grades.service';
 import { Prisma } from '@prisma/client';
 
-@Controller('courses/grades')
+@Controller('api/courses/:courseID/grades')
 export class GradesController {
   constructor(private readonly gradeService: GradesService) {}
   private readonly logger = new Logger(GradesController.name);
 
-  @Get(':courseID')
+  @Get()
   async getCourse(@Param('courseID') courseID: string) {
     try {
       const course = await this.gradeService.grade({ id: courseID });
@@ -47,7 +47,7 @@ export class GradesController {
     }
   }
 
-  @Post('/create')
+  @Post()
   async createCourse(@Body() data: Prisma.CourseGradeCreateInput) {
     try {
       const course = await this.gradeService.newGrade(data);
@@ -62,7 +62,7 @@ export class GradesController {
     }
   }
 
-  @Put(':courseID/update')
+  @Put('/update')
   async updateCourse(
     @Param() courseID: string,
     @Body() data: Prisma.CourseGradeUpdateInput,
@@ -80,7 +80,7 @@ export class GradesController {
     }
   }
 
-  @Delete(':courseID/delete')
+  @Delete('/delete')
   async deleteCourse(@Param() courseID: string) {
     try {
       await this.gradeService.deleteGrade(courseID);

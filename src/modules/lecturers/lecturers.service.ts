@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class LecturersService {
@@ -24,8 +25,12 @@ export class LecturersService {
   }
 
   async newLecturer(data: Prisma.LecturerCreateInput) {
+    const hashedPassword = await bcrypt.hash(data.password, 10);
     return this.prisma.lecturer.create({
-      data,
+      data: {
+        ...data,
+        password: hashedPassword,
+      },
     });
   }
 

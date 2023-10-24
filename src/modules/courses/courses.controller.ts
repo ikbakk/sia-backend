@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -11,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
 
-@Controller('courses')
+@Controller('api/courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
   private readonly logger = new Logger(CoursesController.name);
@@ -42,6 +43,7 @@ export class CoursesController {
       };
     } catch (err) {
       this.logger.error(err);
+
       throw new InternalServerErrorException();
     }
   }
@@ -57,6 +59,10 @@ export class CoursesController {
       };
     } catch (err) {
       this.logger.error(err);
+
+      if (err.name === 'PrismaClientValidationError') {
+        throw new BadRequestException(err.message);
+      }
       throw new InternalServerErrorException();
     }
   }

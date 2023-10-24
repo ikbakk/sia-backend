@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -57,6 +58,10 @@ export class LecturersController {
       };
     } catch (err) {
       this.logger.error(err);
+
+      if (err.name === 'PrismaClientValidationError') {
+        throw new BadRequestException(err.message);
+      }
       throw new InternalServerErrorException();
     }
   }

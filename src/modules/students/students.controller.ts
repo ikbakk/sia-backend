@@ -12,7 +12,7 @@ import {
 import { StudentService } from './students.service';
 import { Prisma, Student } from '@prisma/client';
 import { ErrorRes } from 'src/interfaces/error';
-import { SuccessRes } from '../../../dist/interfaces/success';
+import { SuccessRes } from '../../interfaces/success';
 
 @Controller('api/students')
 export class StudentsController {
