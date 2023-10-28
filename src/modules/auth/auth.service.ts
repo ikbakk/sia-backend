@@ -21,7 +21,11 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: student.id, studentID: student.studentID };
+    const payload = {
+      sub: student.id,
+      studentID: student.studentID,
+      role: student.role,
+    };
     const token = await this.jwtServices.signAsync(payload);
 
     return token;
@@ -36,7 +40,11 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const payload = { sub: lecturer.id, lecturerID: lecturer.lecturerID };
+    const payload = {
+      sub: lecturer.id,
+      lecturerID: lecturer.lecturerID,
+      role: lecturer.role,
+    };
     const token = await this.jwtServices.signAsync(payload);
 
     return token;
