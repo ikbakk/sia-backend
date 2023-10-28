@@ -8,23 +8,26 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { GradesService } from './grades.service';
 import { Prisma } from '@prisma/client';
+import { AuthGuard } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('api/courses/:courseID/grades')
 export class GradesController {
   constructor(private readonly gradeService: GradesService) {}
   private readonly logger = new Logger(GradesController.name);
 
-  @Get()
-  async getCourse(@Param('courseID') courseID: string) {
+  @Get(':gradeID')
+  async getGradeDetail(@Param('courseID') courseID: string) {
     try {
-      const course = await this.gradeService.grade({ id: courseID });
+      const courseGrade = await this.gradeService.grade({ id: courseID });
 
       return {
-        message: 'Course fetched',
-        data: course,
+        message: 'Grade detail fetched',
+        data: courseGrade,
       };
     } catch (err) {
       this.logger.error(err);
@@ -33,13 +36,13 @@ export class GradesController {
   }
 
   @Get()
-  async getCourses() {
+  async getGrades() {
     try {
-      const courses = await this.gradeService.grades();
+      const grades = await this.gradeService.grades();
 
       return {
-        message: 'Courses fetched',
-        data: courses,
+        message: 'Grades fetched',
+        data: grades,
       };
     } catch (err) {
       this.logger.error(err);
@@ -48,13 +51,13 @@ export class GradesController {
   }
 
   @Post()
-  async createCourse(@Body() data: Prisma.CourseGradeCreateInput) {
+  async createCourseGrade(@Body() data: Prisma.CourseGradeCreateInput) {
     try {
-      const course = await this.gradeService.newGrade(data);
+      const newGrade = await this.gradeService.newGrade(data);
 
       return {
-        message: 'Course created',
-        data: course,
+        message: 'Grade created',
+        data: newGrade,
       };
     } catch (err) {
       this.logger.error(err);
@@ -63,16 +66,16 @@ export class GradesController {
   }
 
   @Put('/update')
-  async updateCourse(
+  async updateGrade(
     @Param() courseID: string,
     @Body() data: Prisma.CourseGradeUpdateInput,
   ) {
     try {
-      const course = await this.gradeService.updateGrade(courseID, data);
+      const updatedGrade = await this.gradeService.updateGrade(courseID, data);
 
       return {
-        message: 'Course updated',
-        data: course,
+        message: 'Grade updated',
+        data: updatedGrade,
       };
     } catch (err) {
       this.logger.error(err);
@@ -81,12 +84,12 @@ export class GradesController {
   }
 
   @Delete('/delete')
-  async deleteCourse(@Param() courseID: string) {
+  async deleteGrade(@Param() courseID: string) {
     try {
       await this.gradeService.deleteGrade(courseID);
 
       return {
-        message: 'Course deleted',
+        message: 'Grade deleted',
       };
     } catch (err) {
       this.logger.error(err);

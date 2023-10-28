@@ -9,9 +9,12 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
+import { AuthGuard } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('api/courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
