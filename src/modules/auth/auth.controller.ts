@@ -7,8 +7,10 @@ import {
   InternalServerErrorException,
   Logger,
   BadRequestException,
+  Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { Response } from 'express';
 
 @Controller('api/auth')
 export class AuthController {
@@ -20,11 +22,14 @@ export class AuthController {
   async studentSignIn(
     @Body('studentID') studentID: string,
     @Body('password') password: string,
+    @Res({ passthrough: true }) res: Response,
   ) {
     try {
       const student = await this.authService.studentSignIn(studentID, password);
+
+      res.cookie('token', student, { httpOnly: true });
       return {
-        token: student,
+        message: 'Success',
       };
     } catch (err) {
       this.logger.error(err);
@@ -41,14 +46,17 @@ export class AuthController {
   async lecturerSignIn(
     @Body('lecturerID') lecturerID: string,
     @Body('password') password: string,
+    @Res({ passthrough: true }) res: Response,
   ) {
     try {
       const lecturer = await this.authService.lecturerSignIn(
         lecturerID,
         password,
       );
+
+      res.cookie('token', lecturer, { httpOnly: true });
       return {
-        token: lecturer,
+        message: 'Success',
       };
     } catch (err) {
       this.logger.error(err);
