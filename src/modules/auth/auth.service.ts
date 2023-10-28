@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { StudentService } from '../students/students.service';
-// import { LecturersService } from '../lecturers/lecturers.service';
+import { LecturersService } from '../lecturers/lecturers.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 
@@ -8,7 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 export class AuthService {
   constructor(
     private jwtServices: JwtService,
-    private studentService: StudentService, // private lecturersService: LecturersService,
+    private studentService: StudentService,
+    private lecturersService: LecturersService,
   ) {}
 
   async studentSignIn(studentID: string, password: string) {
@@ -21,6 +22,21 @@ export class AuthService {
     }
 
     const payload = { sub: student.id, studentID: student.studentID };
+    const token = await this.jwtServices.signAsync(payload);
+
+    return token;
+  }
+
+  async lecturerSignIn(lecturerID: string, password: string) {
+    const lecturer = await this.lecturersService.lecturer(lecturerID);
+
+    const isMatch = await bcrypt.compare(password, lecturer.password);
+
+    if (!isMatch) {
+      throw new UnauthorizedException();
+    }
+
+    const payload = { sub: lecturer.id, lecturerID: lecturer.lecturerID };
     const token = await this.jwtServices.signAsync(payload);
 
     return token;

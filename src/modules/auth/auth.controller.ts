@@ -26,13 +26,37 @@ export class AuthController {
       return {
         token: student,
       };
-      return student;
     } catch (err) {
       this.logger.error(err);
 
       if (err.name === 'PrismaClientValidationError') {
         throw new BadRequestException(err.message);
       }
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post('/lecturers/signin')
+  async lecturerSignIn(
+    @Body('lecturerID') lecturerID: string,
+    @Body('password') password: string,
+  ) {
+    try {
+      const lecturer = await this.authService.lecturerSignIn(
+        lecturerID,
+        password,
+      );
+      return {
+        token: lecturer,
+      };
+    } catch (err) {
+      this.logger.error(err);
+
+      if (err.name === 'PrismaClientValidationError') {
+        throw new BadRequestException(err.message);
+      }
+
       throw new InternalServerErrorException();
     }
   }

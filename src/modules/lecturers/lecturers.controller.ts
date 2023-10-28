@@ -9,10 +9,13 @@ import {
   Param,
   Post,
   Put,
+  UseGuards,
 } from '@nestjs/common';
 import { LecturersService } from './lecturers.service';
 import { Prisma } from '@prisma/client';
+import { AuthGuard } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('api/lecturers')
 export class LecturersController {
   constructor(private readonly lecturersService: LecturersService) {}
