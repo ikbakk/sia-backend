@@ -8,12 +8,15 @@ import {
   Logger,
   Put,
   InternalServerErrorException,
+  UseGuards,
 } from '@nestjs/common';
 import { StudentService } from './students.service';
 import { Prisma, Student } from '@prisma/client';
 import { ErrorRes } from 'src/interfaces/error';
 import { SuccessRes } from '../../interfaces/success';
+import { AuthGuard } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @Controller('api/students')
 export class StudentsController {
   constructor(private readonly studentService: StudentService) {}
