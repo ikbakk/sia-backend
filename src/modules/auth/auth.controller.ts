@@ -27,7 +27,11 @@ export class AuthController {
     try {
       const student = await this.authService.studentSignIn(studentID, password);
 
-      res.cookie('token', student, { httpOnly: true });
+      res.cookie('token', student, {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: true,
+      });
       return {
         message: 'Success',
       };
