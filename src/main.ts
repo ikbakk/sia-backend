@@ -8,6 +8,8 @@ async function bootstrap() {
     bodyParser: true,
   });
 
-  await app.listen(3000);
+  app.enableCors();
+
+  await app.listen(3333);
 }
 bootstrap();
