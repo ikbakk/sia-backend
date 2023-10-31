@@ -5,26 +5,25 @@ import {
   HttpCode,
   HttpStatus,
   InternalServerErrorException,
-  Logger,
   BadRequestException,
   Res,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Response } from 'express';
+import { AuthStudentDto } from './auth.dto';
 
 @Controller('api/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-  private readonly logger = new Logger(AuthController.name);
 
   @HttpCode(HttpStatus.OK)
   @Post('/students/signin')
   async studentSignIn(
-    @Body('studentID') studentID: string,
-    @Body('password') password: string,
+    @Body() dto: AuthStudentDto,
     @Res({ passthrough: true }) res: Response,
   ) {
     try {
+      const { studentID, password } = dto;
       const student = await this.authService.studentSignIn(studentID, password);
 
       res.cookie('token', student, {
@@ -36,10 +35,8 @@ export class AuthController {
         message: 'Success',
       };
     } catch (err) {
-      this.logger.error(err);
-
       if (err.name === 'PrismaClientValidationError') {
-        throw new BadRequestException(err.message);
+        throw new BadRequestException('Id atau Password salah');
       }
       throw new InternalServerErrorException();
     }
@@ -63,8 +60,6 @@ export class AuthController {
         message: 'Success',
       };
     } catch (err) {
-      this.logger.error(err);
-
       if (err.name === 'PrismaClientValidationError') {
         throw new BadRequestException(err.message);
       }
