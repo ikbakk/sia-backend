@@ -12,9 +12,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CoursesService } from './courses.service';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard, RolesGuard } from '../auth/guards';
+import { Roles } from '../auth/decorators/roles.decorator';
 
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('api/courses')
 export class CoursesController {
   constructor(private readonly coursesService: CoursesService) {}
@@ -52,6 +53,7 @@ export class CoursesController {
   }
 
   @Post('/create')
+  @Roles('ADMIN')
   async createCourse(@Body() data: any) {
     try {
       const course = await this.coursesService.newCourse(data);
@@ -71,6 +73,7 @@ export class CoursesController {
   }
 
   @Put('/update')
+  @Roles('ADMIN')
   async updateCourse(@Body() data: any) {
     try {
       const course = await this.coursesService.updateCourse(data.id, data);
@@ -86,6 +89,7 @@ export class CoursesController {
   }
 
   @Delete('/delete')
+  @Roles('ADMIN')
   async deleteCourse(@Body() data: any) {
     try {
       await this.coursesService.deleteCourse(data.id);

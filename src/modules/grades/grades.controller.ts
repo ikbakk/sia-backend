@@ -12,9 +12,10 @@ import {
 } from '@nestjs/common';
 import { GradesService } from './grades.service';
 import { Prisma } from '@prisma/client';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard, RolesGuard } from '../auth/guards';
+import { Roles } from '../auth/decorators/roles.decorator';
 
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('api/courses/:courseID/grades')
 export class GradesController {
   constructor(private readonly gradeService: GradesService) {}
@@ -51,6 +52,7 @@ export class GradesController {
   }
 
   @Post()
+  @Roles('ADMIN')
   async createCourseGrade(@Body() data: Prisma.CourseGradeCreateInput) {
     try {
       const newGrade = await this.gradeService.newGrade(data);
@@ -66,6 +68,7 @@ export class GradesController {
   }
 
   @Put('/update')
+  @Roles('ADMIN', 'TEACHER')
   async updateGrade(
     @Param() courseID: string,
     @Body() data: Prisma.CourseGradeUpdateInput,
@@ -84,6 +87,7 @@ export class GradesController {
   }
 
   @Delete('/delete')
+  @Roles('ADMIN')
   async deleteGrade(@Param() courseID: string) {
     try {
       await this.gradeService.deleteGrade(courseID);
