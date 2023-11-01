@@ -11,26 +11,24 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { StudentService } from './students.service';
-import { Prisma, Student } from '@prisma/client';
-import { ErrorRes } from 'src/interfaces/error';
-import { SuccessRes } from '../../interfaces/success';
-import { AuthGuard } from '../auth/auth.guard';
+import { Prisma } from '@prisma/client';
+import { AuthGuard, RolesGuard } from '../auth/guards';
+import { Roles } from '../auth/decorators/roles.decorator';
 
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('api/students')
 export class StudentsController {
   constructor(private readonly studentService: StudentService) {}
   private readonly logger = new Logger(StudentsController.name);
 
   @Get(':studentID')
-  async getStudent(
-    @Param('studentID') studentID: string,
-  ): Promise<Partial<Student>> {
+  @Roles('ADMIN', 'STUDENT')
+  async getStudent(@Param('studentID') studentID: string) {
     return this.studentService.student({ studentID });
   }
 
   @Get()
-  async getStudents(): Promise<SuccessRes<Partial<Student>[]>> {
+  async getStudents() {
     try {
       const students = await this.studentService.students();
 
@@ -45,9 +43,8 @@ export class StudentsController {
   }
 
   @Post('/create')
-  async createStudent(
-    @Body() data: Prisma.StudentCreateInput,
-  ): Promise<SuccessRes<Student> | ErrorRes> {
+  @Roles('ADMIN')
+  async createStudent(@Body() data: Prisma.StudentCreateInput) {
     try {
       await this.studentService.newStudent(data);
 
@@ -61,6 +58,7 @@ export class StudentsController {
   }
 
   @Put(':studentID')
+  @Roles('ADMIN', 'STUDENT')
   async updateStudent(
     @Param('studentID') studentID: string,
     @Body() data: Prisma.StudentUpdateInput,

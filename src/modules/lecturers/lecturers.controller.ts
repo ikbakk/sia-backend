@@ -13,15 +13,17 @@ import {
 } from '@nestjs/common';
 import { LecturersService } from './lecturers.service';
 import { Prisma } from '@prisma/client';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthGuard, RolesGuard } from '../auth/guards';
+import { Roles } from '../auth/decorators/roles.decorator';
 
-@UseGuards(AuthGuard)
+@UseGuards(AuthGuard, RolesGuard)
 @Controller('api/lecturers')
 export class LecturersController {
   constructor(private readonly lecturersService: LecturersService) {}
   private readonly logger = new Logger(LecturersController.name);
 
   @Get(':lecturerID')
+  @Roles('ADMIN', 'TEACHER')
   async getLecturer(@Param('lecturerID') lecturerID: string) {
     try {
       const lecturer = await this.lecturersService.lecturer(lecturerID);
@@ -52,6 +54,7 @@ export class LecturersController {
   }
 
   @Post('/create')
+  @Roles('ADMIN')
   async createLecturer(@Body() data: Prisma.LecturerCreateInput) {
     try {
       await this.lecturersService.newLecturer(data);
@@ -70,6 +73,7 @@ export class LecturersController {
   }
 
   @Put(':lecturerID')
+  @Roles('ADMIN', 'TEACHER')
   async updateLecturer(
     @Param('lecturerID') lecturerID: string,
     @Body() data: Prisma.LecturerUpdateInput,
@@ -87,6 +91,7 @@ export class LecturersController {
   }
 
   @Delete()
+  @Roles('ADMIN')
   async deleteLecturer(@Body() lecturerID: string) {
     try {
       await this.lecturersService.deleteLecturer(lecturerID);
