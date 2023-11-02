@@ -35,6 +35,7 @@ export class AuthController {
         message: 'Success',
       };
     } catch (err) {
+      console.log(err);
       if (err.name === 'PrismaClientValidationError') {
         throw new BadRequestException('Id atau Password salah');
       }

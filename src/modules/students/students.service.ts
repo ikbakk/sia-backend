@@ -7,11 +7,11 @@ import * as bcrypt from 'bcrypt';
 export class StudentService {
   constructor(private prisma: PrismaService) {}
 
-  async student(
-    whereInput: Prisma.StudentWhereUniqueInput,
-  ): Promise<Partial<Student>> {
+  async student(studentID: string): Promise<Student> {
     return this.prisma.student.findUnique({
-      where: whereInput,
+      where: {
+        studentID,
+      },
     });
   }
 

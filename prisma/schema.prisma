@@ -36,6 +36,8 @@ model Student {
   grades              CourseGrade[] @relation("student")
   gradesIDs           String[]
   semester            Int
+  faculty             String
+  major               String
   createdAt           DateTime      @default(now())
 }
 

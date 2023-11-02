@@ -24,7 +24,7 @@ export class StudentsController {
   @Get(':studentID')
   @Roles('ADMIN', 'STUDENT')
   async getStudent(@Param('studentID') studentID: string) {
-    return this.studentService.student({ studentID });
+    return this.studentService.student(studentID);
   }
 
   @Get()
