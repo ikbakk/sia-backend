@@ -14,11 +14,15 @@ import { StudentService } from './students.service';
 import { Prisma } from '@prisma/client';
 import { AuthGuard, RolesGuard } from '../auth/guards';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { KrsService } from '../krs/krs.service';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('api/students')
 export class StudentsController {
-  constructor(private readonly studentService: StudentService) {}
+  constructor(
+    private readonly studentService: StudentService,
+    private readonly krsService: KrsService,
+  ) {}
   private readonly logger = new Logger(StudentsController.name);
 
   @Get(':studentID')
@@ -38,6 +42,76 @@ export class StudentsController {
       };
     } catch (err) {
       this.logger.error(err);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @Roles('ADMIN', 'STUDENT')
+  @Get(':studentID/courses/active')
+  async getEnrolledCourses(@Param('studentID') studentID: string) {
+    try {
+      const enrolledCourses =
+        await this.studentService.studentActiveCourses(studentID);
+
+      return {
+        message: 'Enrolled courses fetched',
+        data: enrolledCourses.enrolledCourses,
+      };
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException();
+    }
+  }
+  @Roles('ADMIN', 'STUDENT')
+  @Get(':studentID/courses/completed')
+  async getCompletedCourses(@Param('studentID') studentID: string) {
+    try {
+      const completedCourses =
+        await this.studentService.studentCompletedCourses(studentID);
+
+      return {
+        message: 'Completed courses fetched',
+        data: completedCourses.completedCourses,
+      };
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @Put(':studentID/courses/active')
+  async updateEnrolledCourses(
+    @Param('studentID') studentID: string,
+    @Body('krsID') krsID: string,
+  ) {
+    try {
+      const approvedKrs = await this.krsService.approvedKrsCourses(krsID);
+
+      if (!approvedKrs) {
+        throw new Error('There is no krs approved');
+      }
+
+      const newData: Prisma.StudentUpdateInput = {
+        enrolledCourses: {
+          connect: approvedKrs.courses.map((c) => ({ id: c })),
+        },
+      };
+      const updatedStudent = await this.studentService.updateStudent(
+        studentID,
+        newData,
+      );
+
+      return {
+        message: 'Enrolled courses updated',
+        data: updatedStudent,
+      };
+    } catch (error) {
+      this.logger.error(error);
+
+      if (error.message === 'There is no krs approved') {
+        throw new BadRequestException(error.message);
+      }
+
       throw new InternalServerErrorException();
     }
   }

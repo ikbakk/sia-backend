@@ -14,6 +14,7 @@ import {
 import { CoursesService } from './courses.service';
 import { AuthGuard, RolesGuard } from '../auth/guards';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { Prisma } from '@prisma/client';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('api/courses')
@@ -36,6 +37,22 @@ export class CoursesController {
     }
   }
 
+  @Get('details/byIDs')
+  async GetCoursesByIDs(@Body('coursesIDs') coursesIDs: string[]) {
+    try {
+      const courses = await this.coursesService.findCourses(coursesIDs);
+
+      return {
+        message: 'Courses fetched',
+        data: courses,
+      };
+    } catch (error) {
+      this.logger.error(error);
+
+      throw new InternalServerErrorException();
+    }
+  }
+
   @Get()
   async getCourses() {
     try {
@@ -54,7 +71,7 @@ export class CoursesController {
 
   @Post('/create')
   @Roles('ADMIN')
-  async createCourse(@Body() data: any) {
+  async createCourse(@Body() data: Prisma.CourseCreateInput) {
     try {
       const course = await this.coursesService.newCourse(data);
 
@@ -72,11 +89,14 @@ export class CoursesController {
     }
   }
 
-  @Put('/update')
+  @Put(':courseID/update')
   @Roles('ADMIN')
-  async updateCourse(@Body() data: any) {
+  async updateCourse(
+    @Body() data: Prisma.CourseUpdateInput,
+    @Param('courseID') courseID: string,
+  ) {
     try {
-      const course = await this.coursesService.updateCourse(data.id, data);
+      const course = await this.coursesService.updateCourse(courseID, data);
 
       return {
         message: 'Course updated',
@@ -84,6 +104,27 @@ export class CoursesController {
       };
     } catch (err) {
       this.logger.error(err);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  @Post(':courseID/enroll')
+  async enrollCourse(
+    @Param('courseID') courseID: string,
+    @Body('studentModelID') studentModelID: string,
+  ) {
+    try {
+      const course = await this.coursesService.updateEnrolledStudents(
+        courseID,
+        studentModelID,
+      );
+
+      return {
+        message: 'Enroll success',
+        data: course,
+      };
+    } catch (error) {
+      this.logger.error(error);
       throw new InternalServerErrorException();
     }
   }

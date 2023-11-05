@@ -13,7 +13,7 @@ export class AuthService {
   ) {}
 
   async studentSignIn(studentID: string, password: string) {
-    const student = await this.studentService.student(studentID);
+    const student = await this.studentService.studentAuthInfo(studentID);
 
     const isMatch = await bcrypt.compare(password, student.password);
 
