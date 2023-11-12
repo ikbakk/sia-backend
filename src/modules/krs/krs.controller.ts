@@ -111,19 +111,30 @@ export class KrsController {
   @Post(':krsID/update')
   async updateKrs(@Param('krsID') krsID: string, @Body() data: CreateKrsBody) {
     try {
-      const { studentID } = await this.krsService.krsByID(krsID);
+      const krs = await this.krsService.krsByID(krsID);
       await this.krsService.updateKrs(krsID, data);
 
-      const approvedKrs = await this.krsService.approvedKrsCourses(krsID);
-
-      if (approvedKrs && data.status === 'APPROVED') {
+      if (krs && data.status === 'APPROVED') {
         const newData: Prisma.StudentUpdateInput = {
           enrolledCourses: {
-            connect: approvedKrs.courses.map((c) => ({ id: c })),
+            connect: krs.courses.map((c) => ({ id: c })),
           },
         };
 
-        await this.studentService.updateStudent(studentID, newData);
+        await this.studentService.updateStudent(krs.studentID, newData);
+      }
+
+      if (krs && data.status === 'COMPLETED') {
+        const newData: Prisma.StudentUpdateInput = {
+          completedCourses: {
+            connect: krs.courses.map((c) => ({ id: c })),
+          },
+          enrolledCourses: {
+            set: [],
+          },
+        };
+
+        await this.studentService.updateStudent(krs.studentID, newData);
       }
 
       return {

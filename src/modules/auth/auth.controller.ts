@@ -39,6 +39,11 @@ export class AuthController {
       if (err.name === 'PrismaClientValidationError') {
         throw new BadRequestException('Id atau Password salah');
       }
+
+      if (err.message === 'Student not found') {
+        throw new BadRequestException('Id atau Password salah');
+      }
+
       throw new InternalServerErrorException();
     }
   }

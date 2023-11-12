@@ -15,7 +15,11 @@ export class AuthService {
   async studentSignIn(studentID: string, password: string) {
     const student = await this.studentService.studentAuthInfo(studentID);
 
-    const isMatch = await bcrypt.compare(password, student.password);
+    if (!student) {
+      throw new Error('Student not found');
+    }
+
+    const isMatch = bcrypt.compare(password, student.password);
 
     if (!isMatch) {
       throw new UnauthorizedException();

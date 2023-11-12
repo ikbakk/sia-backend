@@ -97,6 +97,7 @@ export class CoursesService {
         type: true,
         available: true,
         code: true,
+        semester: true,
       },
     });
   }
