@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -14,6 +15,7 @@ import { GradesService } from './grades.service';
 import { Prisma } from '@prisma/client';
 import { AuthGuard, RolesGuard } from '../auth/guards';
 import { Roles } from '../auth/decorators/roles.decorator';
+import { CreateGradeDto } from './dto/grades.dto';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('api/courses/:courseID/grades')
@@ -22,9 +24,9 @@ export class GradesController {
   private readonly logger = new Logger(GradesController.name);
 
   @Get(':gradeID')
-  async getGradeDetail(@Param('courseID') courseID: string) {
+  async getGradeDetail(@Param('gradeID') gradeID: string) {
     try {
-      const courseGrade = await this.gradeService.grade({ id: courseID });
+      const courseGrade = await this.gradeService.grade({ id: gradeID });
 
       return {
         message: 'Grade detail fetched',
@@ -52,29 +54,38 @@ export class GradesController {
   }
 
   @Post()
-  @Roles('ADMIN')
-  async createCourseGrade(@Body() data: Prisma.CourseGradeCreateInput) {
+  // @Roles('ADMIN')
+  async createCourseGrade(
+    @Param('courseID') courseID: string,
+    @Body() data: CreateGradeDto,
+  ) {
     try {
-      const newGrade = await this.gradeService.newGrade(data);
-
+      const newGradeData = {
+        ...data,
+        courseID,
+      };
+      const newGrade = await this.gradeService.newGrade(newGradeData);
       return {
         message: 'Grade created',
         data: newGrade,
       };
     } catch (err) {
+      if (err.name === 'PrismaClientValidationError') {
+        throw new BadRequestException(err.message);
+      }
       this.logger.error(err);
       throw new InternalServerErrorException();
     }
   }
 
-  @Put('/update')
+  @Put(':gradeID/update')
   @Roles('ADMIN', 'TEACHER')
   async updateGrade(
-    @Param() courseID: string,
+    @Param('gradeID') gradeID: string,
     @Body() data: Prisma.CourseGradeUpdateInput,
   ) {
     try {
-      const updatedGrade = await this.gradeService.updateGrade(courseID, data);
+      const updatedGrade = await this.gradeService.updateGrade(gradeID, data);
 
       return {
         message: 'Grade updated',
@@ -87,10 +98,10 @@ export class GradesController {
   }
 
   @Delete('/delete')
-  @Roles('ADMIN')
-  async deleteGrade(@Param() courseID: string) {
+  // @Roles('ADMIN')
+  async deleteGrade(@Body('gradeID') gradeID: string) {
     try {
-      await this.gradeService.deleteGrade(courseID);
+      await this.gradeService.deleteGrade(gradeID);
 
       return {
         message: 'Grade deleted',
