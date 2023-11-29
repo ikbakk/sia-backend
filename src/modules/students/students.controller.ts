@@ -9,12 +9,14 @@ import {
   Put,
   InternalServerErrorException,
   UseGuards,
+  NotFoundException,
 } from '@nestjs/common';
 import { StudentService } from './students.service';
 import { Prisma } from '@prisma/client';
 import { AuthGuard, RolesGuard } from '../auth/guards';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { KrsService } from '../krs/krs.service';
+import { GradesService } from '../grades/grades.service';
 
 @UseGuards(AuthGuard, RolesGuard)
 @Controller('api/students')
@@ -22,6 +24,7 @@ export class StudentsController {
   constructor(
     private readonly studentService: StudentService,
     private readonly krsService: KrsService,
+    private readonly gradeService: GradesService,
   ) {}
   private readonly logger = new Logger(StudentsController.name);
 
@@ -29,6 +32,26 @@ export class StudentsController {
   @Roles('ADMIN', 'STUDENT')
   async getStudent(@Param('studentID') studentID: string) {
     return this.studentService.student(studentID);
+  }
+
+  @Get(':studentID/grades')
+  @Roles('ADMIN', 'STUDENT')
+  async getStudentGrades(@Param('studentID') studentID: string) {
+    try {
+      const grades = await this.gradeService.studentGrades(studentID);
+
+      if (!grades) {
+        throw new NotFoundException('No student with given ID');
+      }
+
+      return {
+        message: 'Grades fetched',
+        data: grades,
+      };
+    } catch (err) {
+      this.logger.error(err);
+      throw new InternalServerErrorException();
+    }
   }
 
   @Get()

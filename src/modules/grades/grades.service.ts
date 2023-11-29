@@ -8,6 +8,29 @@ import { CreateGradeDto } from './dto/grades.dto';
 export class GradesService {
   constructor(private prisma: PrismaService) {}
 
+  async studentGrades(studentID: string) {
+    const grades = await this.prisma.courseGrade.findMany({
+      where: {
+        studentID,
+      },
+    });
+
+    const courses = await this.prisma.course.findMany({
+      where: {
+        id: {
+          in: grades.map((grade) => grade.courseID),
+        },
+      },
+    });
+
+    const res = grades.map((grade) => ({
+      ...grade,
+      courseDetail: courses.find((course) => course.id === grade.courseID),
+    }));
+
+    return res;
+  }
+
   async grade(whereInput: Prisma.CourseGradeWhereUniqueInput) {
     return this.prisma.courseGrade.findUnique({
       where: whereInput,

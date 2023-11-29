@@ -13,3 +13,11 @@ export class CreateGradeDto {
   @IsNumber()
   finalExam: number;
 }
+
+export class StudentGrades {
+  @IsString()
+  studentID: string;
+
+  @IsString()
+  courseID: string;
+}
