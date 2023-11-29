@@ -21,6 +21,19 @@ export class GradesService {
           in: grades.map((grade) => grade.courseID),
         },
       },
+      select: {
+        id: true,
+        name: true,
+        credit: true,
+        onYear: true,
+        type: true,
+        available: true,
+        code: true,
+        semester: true,
+        completedByStudentIDs: false,
+        enrolledByStudentIDs: false,
+        lecturerIDs: false,
+      },
     });
 
     const res = grades.map((grade) => ({
